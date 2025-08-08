@@ -5,7 +5,7 @@ import AvatarPicker from "@/components/AvatarPicker";
 import VideoPlayer from "@/components/VideoPlayer";
 
 export default function DashboardPage() {
-  const [projectId, setProjectId] = useState<number>(1);
+  const [projectId, setProjectId] = useState<number | null>(null);
   const [script, setScript] = useState<string>("Introducing our new product. It's fast, affordable, and effective!");
   const [language, setLanguage] = useState<string>("en");
   const [avatarId, setAvatarId] = useState<string>("");
@@ -19,12 +19,20 @@ export default function DashboardPage() {
     setVoicePreviewUrl(res.url);
   }
 
+  async function ensureProject() {
+    if (projectId) return projectId;
+    const created = await apiPost<{ id: number }>("/projects", { name: "My First Project" });
+    setProjectId(created.id);
+    return created.id;
+  }
+
   async function generateVideo() {
+    const pid = await ensureProject();
     // 1) Save script
-    const created = await apiPost<{ id: number }>("/scripts", { project_id: projectId, language, text: script });
+    const created = await apiPost<{ id: number }>("/scripts", { project_id: pid, language, text: script });
     // 2) Create job
-    const job = await apiPost<{ id: number; status: string }>("/jobs", { project_id: projectId, script_id: created.id, avatar_id: avatarId });
-    setJobId(job.id);
+          const job = await apiPost<{ id: number; status: string }>("/jobs", { project_id: pid, script_id: created.id, avatar_id: avatarId });
+setJobId(job.id);
     setJobStatus(job.status);
   }
 

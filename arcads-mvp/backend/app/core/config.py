@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/arcads"
+    database_url: str = "sqlite:///./arcads.db"
     redis_url: str = "redis://localhost:6379/0"
     aws_region: str = "us-east-1"
     s3_bucket: str = "arcads"

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.db import SessionLocal, Base, engine
-from app.schemas.schemas import ScriptIn, ScriptOut, JobCreate, JobOut, VoicePreviewIn, AvatarsOut
-from app.models.models import Script, Job
+from app.schemas.schemas import ProjectIn, ProjectOut, ScriptIn, ScriptOut, JobCreate, JobOut, VoicePreviewIn, AvatarsOut
+from app.models.models import Script, Job, Project
 from datetime import datetime
 
 api_router = APIRouter()
@@ -20,6 +20,19 @@ def get_db():
         yield db
     finally:
         db.close()
+
+@api_router.post("/projects", response_model=ProjectOut)
+def create_project(payload: ProjectIn, db: Session = Depends(get_db)):
+    project = Project(name=payload.name, user_id=1)
+    db.add(project)
+    db.commit()
+    db.refresh(project)
+    return ProjectOut(id=project.id, name=project.name)
+
+@api_router.get("/projects", response_model=list[ProjectOut])
+def list_projects(db: Session = Depends(get_db)):
+    projects = db.query(Project).order_by(Project.created_at.desc()).all()
+    return [ProjectOut(id=p.id, name=p.name) for p in projects]
 
 @api_router.post("/scripts", response_model=ScriptOut)
 def create_script(payload: ScriptIn, db: Session = Depends(get_db)):

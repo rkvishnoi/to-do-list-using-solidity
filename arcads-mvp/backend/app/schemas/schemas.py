@@ -1,6 +1,13 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Literal
 
+class ProjectIn(BaseModel):
+    name: str
+
+class ProjectOut(BaseModel):
+    id: int
+    name: str
+
 class ScriptIn(BaseModel):
     project_id: int
     language: str = "en"
