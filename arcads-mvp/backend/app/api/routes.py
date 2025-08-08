@@ -56,7 +56,18 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
     job = db.get(Job, job_id)
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
-    return JobOut(id=job.id, status=job.status, stage=job.stage, error=job.error)
+    video_id = None
+    if job.status == "completed":
+        from app.models.models import Video
+        video = (
+            db.query(Video)
+            .filter(Video.project_id == job.project_id)
+            .order_by(Video.created_at.desc())
+            .first()
+        )
+        if video:
+            video_id = video.id
+    return JobOut(id=job.id, status=job.status, stage=job.stage, error=job.error, video_id=video_id)
 
 @api_router.post("/voices/preview")
 async def voice_preview(payload: VoicePreviewIn):

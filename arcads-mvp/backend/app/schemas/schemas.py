@@ -32,6 +32,7 @@ class JobOut(BaseModel):
     status: str
     stage: Optional[str] = None
     error: Optional[str] = None
+    video_id: Optional[int] = None
 
 class VoicePreviewIn(BaseModel):
     text: str = Field(min_length=1, max_length=400)

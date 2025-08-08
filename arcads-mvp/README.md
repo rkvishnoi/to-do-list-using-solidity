@@ -27,8 +27,9 @@ docker compose up -d --build
 - Worker processes render jobs
 
 ## Notes
-- Providers (ElevenLabs, D-ID/HeyGen) are stubbed. Add keys in `.env` and wire real calls in `app/api` and `app/workers`.
-- Videos use a sample URL until integration is completed.
+- ElevenLabs preview integrated: set `ELEVENLABS_API_KEY` (and optional `ELEVENLABS_DEFAULT_VOICE_ID`). Previews are uploaded to S3/MinIO and served via presigned URL.
+- D-ID client scaffolded: set `DID_API_KEY` to enable talking-head renders in the worker (currently placeholder upload; wire real flow as needed).
+- S3/MinIO: set `S3_ENDPOINT_URL`, `S3_BUCKET`, and AWS credentials. Bucket will auto-create on first upload.
 
 ## Structure
 ```

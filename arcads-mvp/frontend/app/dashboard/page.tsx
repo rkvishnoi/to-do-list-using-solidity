@@ -39,10 +39,11 @@ setJobId(job.id);
   useEffect(() => {
     if (!jobId) return;
     const t = setInterval(async () => {
-      const res = await apiGet<{ id: number; status: string; stage?: string }>(`/jobs/${jobId}`);
+      const res = await apiGet<{ id: number; status: string; stage?: string; video_id?: number }>(`/jobs/${jobId}`);
       setJobStatus(`${res.status}${res.stage ? ` (${res.stage})` : ""}`);
-      if (res.status === "completed") {
-        setVideoUrl("https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4");
+      if (res.status === "completed" && res.video_id) {
+        const signed = await apiGet<{ url: string }>(`/videos/${res.video_id}/signed-url`);
+        setVideoUrl(signed.url);
         clearInterval(t);
       }
     }, 1500);
