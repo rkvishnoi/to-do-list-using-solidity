@@ -59,9 +59,16 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
     return JobOut(id=job.id, status=job.status, stage=job.stage, error=job.error)
 
 @api_router.post("/voices/preview")
-def voice_preview(payload: VoicePreviewIn):
-    # Stub: return a demo MP3 URL
-    return {"url": "https://file-examples.com/storage/fe5fbf0a7c039f03adcf9f3/2017/11/file_example_MP3_700KB.mp3"}
+async def voice_preview(payload: VoicePreviewIn):
+    from app.utils.elevenlabs import tts_preview_bytes
+    from app.utils.s3 import upload_bytes, generate_presigned_url
+    from app.core.config import settings
+    # Generate short preview via ElevenLabs
+    audio = await tts_preview_bytes(payload.text, payload.voice_id)
+    key = f"previews/voice_{datetime.utcnow().timestamp()}.mp3"
+    upload_bytes(settings.s3_bucket, key, audio, content_type="audio/mpeg")
+    url = generate_presigned_url(settings.s3_bucket, key, expires_in=600)
+    return {"url": url}
 
 @api_router.get("/avatars", response_model=list[AvatarsOut])
 def list_avatars():

@@ -19,10 +19,22 @@ def process_jobs_forever():
                 job.stage = "rendering"
                 job.updated_at = datetime.utcnow()
                 db.commit()
-                # Simulate work
-                time.sleep(2)
-                # Create a demo video row
-                video = Video(project_id=job.project_id, s3_key="demo/demo.mp4", duration_ms=15000)
+                try:
+                    from app.core.config import settings
+                    from app.utils.s3 import upload_bytes
+                    # If D-ID and ElevenLabs configured, we could render here.
+                    # For now, write a tiny placeholder file to S3 so signed URL works.
+                    demo_key = "demo/demo.mp4"
+                    upload_bytes(settings.s3_bucket, demo_key, b"demo", content_type="video/mp4")
+                    video_key = demo_key
+                    time.sleep(1)
+                except Exception as e:
+                    job.status = "failed"
+                    job.error = str(e)
+                    job.updated_at = datetime.utcnow()
+                    db.commit()
+                    continue
+                video = Video(project_id=job.project_id, s3_key=video_key, duration_ms=15000)
                 db.add(video)
                 job.status = "completed"
                 job.stage = "done"
