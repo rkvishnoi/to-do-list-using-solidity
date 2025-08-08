@@ -44,7 +44,16 @@ def create_script(payload: ScriptIn, db: Session = Depends(get_db)):
 
 @api_router.post("/jobs", response_model=JobOut)
 def create_job(payload: JobCreate, db: Session = Depends(get_db)):
-    job = Job(project_id=payload.project_id, status="queued", stage="submitted", created_at=datetime.utcnow(), updated_at=datetime.utcnow())
+    job = Job(
+        project_id=payload.project_id,
+        script_id=payload.script_id,
+        voice_id=payload.voice_id,
+        avatar_id=payload.avatar_id,
+        status="queued",
+        stage="submitted",
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow(),
+    )
     db.add(job)
     db.commit()
     db.refresh(job)

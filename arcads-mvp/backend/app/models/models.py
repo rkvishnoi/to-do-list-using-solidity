@@ -47,6 +47,9 @@ class Job(Base):
     __tablename__ = "jobs"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
+    script_id: Mapped[int | None] = mapped_column(Integer)
+    voice_id: Mapped[str | None] = mapped_column(String(128))
+    avatar_id: Mapped[str | None] = mapped_column(String(128))
     status: Mapped[str] = mapped_column(String(32), default="queued")
     stage: Mapped[str | None] = mapped_column(String(32))
     provider_ids: Mapped[dict | None] = mapped_column(JSON)

@@ -34,6 +34,9 @@ CREATE TABLE IF NOT EXISTS assets (
 CREATE TABLE IF NOT EXISTS jobs (
   id SERIAL PRIMARY KEY,
   project_id INTEGER REFERENCES projects(id),
+  script_id INTEGER,
+  voice_id VARCHAR(128),
+  avatar_id VARCHAR(128),
   status VARCHAR(32) DEFAULT 'queued',
   stage VARCHAR(32),
   provider_ids JSONB,

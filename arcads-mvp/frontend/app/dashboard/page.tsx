@@ -54,8 +54,7 @@ setJobId(job.id);
     <div className="space-y-6">
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-3">
-          <label className="block text-sm">Project ID</label>
-          <input type="number" className="w-full border rounded p-2" value={projectId} onChange={(e)=>setProjectId(parseInt(e.target.value||"1"))} />
+          <div className="text-sm text-gray-600">Project: {projectId ?? "(auto)"}</div>
           <label className="block text-sm mt-4">Language</label>
           <input className="w-full border rounded p-2" value={language} onChange={(e)=>setLanguage(e.target.value)} />
           <label className="block text-sm mt-4">Script</label>
